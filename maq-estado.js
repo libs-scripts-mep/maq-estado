@@ -1,8 +1,13 @@
 class MaqEstado {
 
+    /**
+     * Promove a atualização do estado atual
+     * @param {object} estados 
+     * @param {string} opcao 
+     * @returns {string} estado
+     */
     static Att(estados, opcao = "Avancar") {
 
-        console.log(estados.Atual)
         console.groupEnd(estados.Atual.Nome)
         estados.Historico.push(estados.Atual)
 
@@ -56,6 +61,11 @@ class MaqEstado {
 
     }
 
+    /**
+     * Verifica de existe algum teste pendente (Status: false)
+     * @param {object} estadoAtual 
+     * @returns {boolean} pendencias
+     */
     static ControleAvanco(estadoAtual) {
 
         let props = Object.entries(estadoAtual)
@@ -71,6 +81,11 @@ class MaqEstado {
 
     }
 
+    /**
+     * Retorna nome do primeiro teste pendente no estado atual
+     * @param {object} estadoAtual 
+     * @returns {string} nomeTestePendente
+     */
     static NomeTestePendente(estadoAtual) {
 
         let props = Object.entries(estadoAtual)
@@ -88,6 +103,11 @@ class MaqEstado {
 
     }
 
+    /**
+     * Retorna o índice do primeiro teste pendente no estado atual
+     * @param {object} estadoAtual 
+     * @returns {number} indiceTeste
+     */
     static IndiceTestePendente(estadoAtual) {
 
         let props = Object.entries(estadoAtual)
@@ -105,6 +125,11 @@ class MaqEstado {
 
     }
 
+    /**
+     * Modifica o status do teste pendente, possibilitando o avanço para o próximo teste.
+     * @param {object} testesPendentes 
+     * @param {string} testeConcluido 
+     */
     static TesteConcluido(testesPendentes, testeConcluido) {
 
         Object.keys(testesPendentes).forEach(teste => {
