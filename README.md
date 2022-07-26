@@ -1,13 +1,22 @@
-- [Gerenciador de Máquina de Estados](#gerenciador-de-máquina-de-estados)
-  - [Resumo da classe](#resumo-da-classe)
-  - [Estrutura mínima](#estrutura-mínima)
-  - [Adicionando e executando o primeiro estado](#adicionando-e-executando-o-primeiro-estado)
-  - [Condição de avanço](#condição-de-avanço)
-  - [Use a criatividade...](#use-a-criatividade)
-
 # Gerenciador de Máquina de Estados
 
-Biblioteca conta com uma classe que contém métodos estáticos que auxiliam na manipulação de uma máquina de estados orientada a objeto.
+Biblioteca que manipula uma máquina de estados orientada a objeto.
+
+## Instalando
+
+Abra o terminal, e na pasta do script, rode:
+
+```
+npm i @libs-scripts-mep/maq-estado
+```
+
+## Desinstalando
+
+Abra o terminal, e na pasta do script, rode:
+
+```
+npm uninstall @libs-scripts-mep/maq-estado
+```
 
 ## Resumo da classe
 

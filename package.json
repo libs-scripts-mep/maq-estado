@@ -1,0 +1,23 @@
+{
+  "name": "@libs-scripts-mep/maq-estado",
+  "version": "1.0.0",
+  "description": "Biblioteca que manipula uma máquina de estados orientada a objeto",
+  "main": "maq-estado.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/libs-scripts-mep/maq-estado.git"
+  },
+  "keywords": [
+    "maquina",
+    "estado"
+  ],
+  "author": "Lucas Kroth",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/libs-scripts-mep/maq-estado/issues"
+  },
+  "homepage": "https://github.com/libs-scripts-mep/maq-estado#readme"
+}
