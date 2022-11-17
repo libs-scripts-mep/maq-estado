@@ -6,59 +6,61 @@ class MaqEstado {
      * @param {string} opcao 
      * @returns {string} estado
      */
-    static Att(estados, opcao = "Avancar") {
+    static Att(estados, opcao = "Avancar", timeout = 0) {
 
-        console.groupEnd(estados.Atual.Nome)
-        estados.Historico.push(estados.Atual)
+        setTimeout(() => {
+            
+            console.groupEnd(estados.Atual.Nome)
+            estados.Historico.push(estados.Atual)
 
-        switch (opcao) {
+            switch (opcao) {
 
-            case "Executar":
-                console.group(estados.Atual.Nome)
-                return estados.Atual.Nome
+                case "Executar":
+                    console.group(estados.Atual.Nome)
+                    return estados.Atual.Nome
 
-            case "Avancar":
-                estados.Atual = procuraEstado(estados, estados.Atual.Avancar)
-                console.group(estados.Atual.Nome)
-                return estados.Atual.Nome
+                case "Avancar":
+                    estados.Atual = procuraEstado(estados, estados.Atual.Avancar)
+                    console.group(estados.Atual.Nome)
+                    return estados.Atual.Nome
 
-            case "Anterior":
-                estados.Atual = estadoAnterior(estados.Historico, estados)
-                console.group(estados.Atual.Nome)
-                return estados.Atual.Nome
+                case "Anterior":
+                    estados.Atual = estadoAnterior(estados.Historico, estados)
+                    console.group(estados.Atual.Nome)
+                    return estados.Atual.Nome
 
-            case "FalhaCritica":
-                estados.Atual = procuraEstado(estados, estados.Atual.FalhaCritica)
-                console.group(estados.Atual.Nome)
-                return estados.Atual.Nome
+                case "FalhaCritica":
+                    estados.Atual = procuraEstado(estados, estados.Atual.FalhaCritica)
+                    console.group(estados.Atual.Nome)
+                    return estados.Atual.Nome
 
-            default:
-                break
+                default:
+                    break
 
-        }
+            }
 
-        function estadoAnterior(historicoEstados, estados) {
+            function estadoAnterior(historicoEstados, estados) {
 
-            let offset = 2
-            return procuraEstado(estados, historicoEstados[historicoEstados.length - offset].Nome)
+                let offset = 2
+                return procuraEstado(estados, historicoEstados[historicoEstados.length - offset].Nome)
 
-        }
+            }
 
-        function procuraEstado(estados, proximoEstado) {
+            function procuraEstado(estados, proximoEstado) {
 
-            let estadoRetornado = null
+                let estadoRetornado = null
 
-            Object.keys(estados).forEach(estado => {
-                if (estado == proximoEstado) {
-                    if (estadoRetornado == null) {
-                        estadoRetornado = estados[estado]
+                Object.keys(estados).forEach(estado => {
+                    if (estado == proximoEstado) {
+                        if (estadoRetornado == null) {
+                            estadoRetornado = estados[estado]
+                        }
                     }
-                }
-            })
+                })
 
-            return estadoRetornado
-        }
-
+                return estadoRetornado
+            }
+        }, timeout);
     }
 
     /**
