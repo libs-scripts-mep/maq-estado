@@ -7,34 +7,69 @@ class MaqEstado {
      * @returns {string} estado
      */
     static Att(estados, opcao = "Avancar") {
-            
-        console.groupEnd(estados.Atual.Nome)
-        estados.Historico.push(estados.Atual)
 
-        switch (opcao) {
+        if (estados.Atual != null) {
+            console.groupEnd(estados.Atual.Nome)
+            estados.Historico.push(estados.Atual)
 
-            case "Executar":
-                console.group(estados.Atual.Nome)
-                return estados.Atual.Nome
+            switch (opcao) {
 
-            case "Avancar":
-                estados.Atual = procuraEstado(estados, estados.Atual.Avancar)
-                console.group(estados.Atual.Nome)
-                return estados.Atual.Nome
+                case "Executar":
+                    console.group(estados.Atual.Nome)
+                    return estados.Atual.Nome
 
-            case "Anterior":
-                estados.Atual = estadoAnterior(estados.Historico, estados)
-                console.group(estados.Atual.Nome)
-                return estados.Atual.Nome
+                case "Avancar":
+                    if (estados.Atual.hasOwnProperty("Avancar")) {
+                        estados.Atual = procuraEstado(estados, estados.Atual.Avancar)
 
-            case "FalhaCritica":
-                estados.Atual = procuraEstado(estados, estados.Atual.FalhaCritica)
-                console.group(estados.Atual.Nome)
-                return estados.Atual.Nome
+                        if (estados.Atual != null) {
+                            console.group(estados.Atual.Nome)
+                            return estados.Atual.Nome
 
-            default:
-                break
+                        } else {
+                            pvi.runInstructionS("RESET", [])
+                            alert(`maq-estado.js\n\nEstado de avanço [${estados.Historico[estados.Historico.length - 1]["Avancar"]}] não encontrado em [${estados.Historico[estados.Historico.length - 1]["Nome"]}]\n\nO script será PAUSADO.`)
+                        }
 
+                    } else {
+                        pvi.runInstructionS("RESET", [])
+                        alert(`maq-estado.js\n\nO estado [${estados.Atual.Nome}] não possui a propriedade 'Avancar' definida.\n\nO script será PAUSADO.`)
+                    }
+                    break
+
+                case "Anterior":
+                    estados.Atual = estadoAnterior(estados.Historico, estados)
+                    console.group(estados.Atual.Nome)
+                    return estados.Atual.Nome
+
+                case "FalhaCritica":
+                    if (estados.Atual.hasOwnProperty("FalhaCritica")) {
+                        estados.Atual = procuraEstado(estados, estados.Atual.FalhaCritica)
+
+                        if (estados.Atual != null) {
+                            console.group(estados.Atual.Nome)
+                            return estados.Atual.Nome
+
+                        } else {
+                            pvi.runInstructionS("RESET", [])
+                            alert(`maq-estado.js\n\nEstado de falha crítica [${estados.Historico[estados.Historico.length - 1]["FalhaCritica"]}] não encontrado em [${estados.Historico[estados.Historico.length - 1]["Nome"]}]\n\nO script será PAUSADO.`)
+                        }
+
+                    } else {
+                        pvi.runInstructionS("RESET", [])
+                        alert(`maq-estado.js\n\nO estado [${estados.Atual.Nome}] não possui a propriedade 'FalhaCritica' definida.\n\nO script será PAUSADO.`)
+                    }
+                    break
+
+                default:
+                    pvi.runInstructionS("RESET", [])
+                    alert("maq-estado.js\n\nOpção informada inválida!")
+                    break
+
+            }
+        } else {
+            pvi.runInstructionS("RESET", [])
+            alert("maq-estado.js\n\nImpossível atuar em um objeto igual a null!!\n\nO script será PAUSADO.")
         }
 
         function estadoAnterior(historicoEstados, estados) {
