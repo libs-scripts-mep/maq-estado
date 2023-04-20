@@ -1,6 +1,6 @@
 {
   "name": "@libs-scripts-mep/maq-estado",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Biblioteca que manipula uma máquina de estados orientada a objeto",
   "main": "maq-estado.js",
   "scripts": {
