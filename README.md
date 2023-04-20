@@ -1,3 +1,17 @@
+- [Gerenciador de Máquina de Estados](#gerenciador-de-máquina-de-estados)
+  - [Instalando](#instalando)
+  - [Desinstalando](#desinstalando)
+  - [Resumo da classe](#resumo-da-classe)
+  - [Estrutura mínima](#estrutura-mínima)
+  - [Adicionando e executando o primeiro estado](#adicionando-e-executando-o-primeiro-estado)
+  - [Condição de avanço](#condição-de-avanço)
+  - [Insights](#insights)
+- [Async Steps](#async-steps)
+  - [Configurando um estado como assíncrono](#configurando-um-estado-como-assíncrono)
+  - [Inicializando o gerenciador](#inicializando-o-gerenciador)
+  - [Exemplo simples de utilização](#exemplo-simples-de-utilização)
+
+
 # Gerenciador de Máquina de Estados
 
 Biblioteca que manipula uma máquina de estados orientada a objeto.
@@ -76,6 +90,10 @@ class MaqEstado {
         testesPendentes[testeConcluido].Status = true
     }
 }
+
+```
+
+```js
 ```
 
 ## Estrutura mínima
@@ -185,6 +203,7 @@ Exemplo:
         "Atual": null,
         "Historico": [],
         "TesteReles": {
+            "isAsync": true,
             "Nome": "TesteReles",
             "Avancar": "TesteMOSFETs",
             "FalhaCritica": "FinalizaRastreamento",
@@ -235,7 +254,7 @@ MaquinaDeEstados(estado){
 }
 ```
 
-## Use a criatividade...
+## Insights
 
 Aproveite o fato de que cada estado da máquina de estado é um objeto e poder ter diversas propriedades, para agrupar os parâmetros de cada estado de acordo com o teste a ser realizado.
 
@@ -312,3 +331,118 @@ Exemplo:
 }
 ```
 
+# Async Steps
+
+Classe simples que realiza o gerenciamento das etapas assíncronas em um teste.
+
+## Configurando um estado como assíncrono
+
+É necessário configurar no .json o estado assíncrono da máquina, adicionando o parâmetro `"isAsync": true`:
+
+```json
+//.JSON
+{
+    "Estados": {
+        "Atual": null,
+        "Historico": [],
+        "TesteReles": {
+            "isAsync": true,
+            "Nome": "TesteReles",
+            "Avancar": "TesteMOSFETs",
+            "FalhaCritica": "FinalizaRastreamento",
+            "CondicaoAvanco": {
+                "ReleClorador": {
+                    "Status": false,
+                    "EntradaDAQ": "ac3"
+                },
+                "ReleAquecimento": {
+                    "Status": false,
+                    "EntradaDAQ": "ac2"
+                }
+            }
+        }
+    }
+}
+```
+
+## Inicializando o gerenciador
+
+```js
+class Main {
+    constructor() {
+        UtilsPVI.CarregaJson((config) => {
+            this.Config = config
+            this.Estados = this.Config.Estados
+            this.Estados.Atual = this.Estados.SetupComponentes
+
+            this.Async = new AsyncStep(this.Estados)
+            this.Async.init()
+        })
+    }
+}
+```
+
+## Exemplo simples de utilização
+
+```js
+class Main {
+    constructor() {
+        UtilsPVI.CarregaJson((config) => {
+            this.Config = config
+            this.Estados = this.Config.Estados
+            this.Estados.Atual = this.Estados.SetupComponentes
+
+            this.Async = new AsyncStep(this.Estados)
+            this.Async.init()
+        })
+    }
+
+    MaquinaDeEstados(state) {
+        switch (state) {
+            case "TesteReles":
+
+                this.Async.Steps.TesteReles = this.Async.Status.STARTED
+
+                //método fictício, assim que iniciado, imediatamente chama o avanço da maquina de estados.
+                this.AcionaReles((retorno)=>{
+
+                    //quando o teste finaliza, atualiza o status novamente para FINISHED
+                    this.Async.Steps.TesteReles = this.Async.Status.FINISHED
+
+                    if(retorno){
+                        //seta info relatório
+                    }else{
+                        //seta info relatório
+                    }
+                })
+
+                //Dessa forma seria possível startar dois testes simultaneamente.
+                this.MaquinaDeEstados(MaqEstado.Att(this.Estados, "Avancar"))
+                
+                break
+            case "FinalizaRastreamento":
+                    //Após realizado todo roteiro de testes, utiliza-se os métodos auxiliares...
+                    const asyncStepsMonitor = setInterval(() => {
+
+                        //verifica se todos os estados assíncronos cadastrados finalizaram.
+                        //evita que o rastreamento finalize sem aguardar o retorno dos estados assíncronas
+                        if (this.Async.allFinished()) {
+
+                            clearInterval(asyncStepsMonitor)
+
+                            if (this.Config.Rastreamento == true) {
+
+                                RastPVI.setReport(sessionStorage.getItem("SerialNumber"), this.RelatorioTeste, true)
+                                RastPVI.end(sessionStorage.getItem("SerialNumber"), RastPVI.evalReport(this.RelatorioTeste), this.ComponentesDeTeste)
+
+                            } else {
+                                this.MaquinaDeEstados(MaqEstado.Att(this.Estados, "Avancar"))
+                            }
+                        }
+                    }, 300)
+
+                break
+        }
+    }
+}
+```

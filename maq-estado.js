@@ -178,3 +178,96 @@ class MaqEstado {
 
     }
 }
+
+class AsyncStep {
+    constructor(stateMachine) {
+        this.Status = {
+            STANDBY: 0,
+            STARTED: 1,
+            FINISHED: 3,
+            ABORTED: 4
+        }
+        this.Steps = new Object()
+        this.StateMachine = stateMachine
+    }
+
+    /**
+     * Verifica se todas as etapas assíncronas terminaram
+     * @returns {boolean}
+     */
+    init() {
+        Object.entries(this.StateMachine).forEach((state) => {
+            if (state[1].isAsync) {
+                state[1].Nome != "Atual" ? this.addStep(state[1].Nome) : null
+            }
+        })
+    }
+
+    /**
+     * Adiciona uma etapa ao objeto
+     * @returns {boolean}
+     */
+    addStep(step, status = this.Status.STANDBY) {
+        this.Steps[step] = status
+    }
+
+    /**
+     * Detela uma etapa do objeto
+     * @returns {boolean}
+     */
+    deleteStep(step) {
+        delete this.Steps[step]
+    }
+
+    /**
+    * Retorna a lista de etapas num array
+    * @returns {Array}
+    */
+    getStepsAsArray() {
+        return Object.entries(this.Steps)
+    }
+
+    /**
+     * Verifica se existe etapa cadastrada
+     * @returns {boolean}
+     */
+    hasSteps() {
+        return this.getStepsAsArray().length > 0
+    }
+
+    /**
+     * Verifica se alguma etapa assíncrona iniciou
+     * @returns {boolean}
+     */
+    someStarted() {
+        if (this.hasSteps()) {
+            let someStarted = false
+            this.getStepsAsArray().forEach((step) => {
+                if (step[1] != this.Status.STANDBY) {
+                    someStarted = true
+                }
+            })
+            return someStarted
+        } else {
+            return null
+        }
+    }
+
+    /**
+     * Verifica se todas as etapas assíncronas terminaram
+     * @returns {boolean}
+     */
+    allFinished() {
+        if (this.hasSteps()) {
+            let allFinished = true
+            this.getStepsAsArray().forEach((step) => {
+                if (step[1] != this.Status.FINISHED) {
+                    allFinished = false
+                }
+            })
+            return allFinished
+        } else {
+            return null
+        }
+    }
+}
